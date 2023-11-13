@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="grid.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <script src="jquery.js"></script>
+    <link rel="stylesheet" href="queries.css">
+</head>
+<body> 
+    <header>
+        <nav>
+            <div class="row">
+                <img class="logo" src="logo.png" alt="">
+                <ul class="main-nav">
+                    <li><a href="#feature">The Quiz App</a></li>
+                    <li><a href="#hiw">How it works</a></li>
+                    <li><a href="#feature">Our Features</a></li>
+                    <li><a href="signup/signup.html">Sign-up</a></li>
+                </ul>
+            </div>
+        </nav>
+        <div class="hero-text-box">
+            <h1 class="h11">Test your knowledge<br>Improve your knowledge</h1>
+            <a class="btn btn-full" href="#hiw">Wanna create a quiz?</a>
+            <a class="btn btn-ghost" href="#feature">Show me more</a>
+        </div>
+    </header>
+    <section class="section-features" id="feature" data-aos="fade-in" data-aos-duration="2000">
+        <div class="row">
+            <h2>Improve your knowledge &mdash; Improve your result</h2>
+            <p class="long-copy">
+                Quizzes are a great way to have fun, but they can also be used as a tool for self-improvement.
+                In a quiz, which is also known as a mind sport, participants compete to answer questions correctly.
+            </p>
+        </div>
+        <div class="row">
+            <div class="col span_1_of_4 box"> 
+                <ion-icon class="icon-big" name="people-outline"></ion-icon>
+                <h3>Different user based login</h3>
+                <p>Login/SignUp based on different user roles
+                   <ul>
+                    <li>Student - taking the quiz</li>
+                    <li>Admin - creating the quiz</li>
+                   </ul>
+                </p>
+            </div>
+            <div class="col span_1_of_4 box"> 
+                <ion-icon class="icon-big" name="alarm-outline"></ion-icon>
+                <h3>Timed quizzes</h3>
+                <p>Improve your speed with timed Quizzes</p>
+            </div>
+            <div class="col span_1_of_4 box"> 
+                <ion-icon class="icon-big" name="document-text-outline"></ion-icon>
+                <h3>Multiple quiz types</h3>
+                <p>
+                    <ul>
+                        <li>MCQ</li>
+                        <li>True/false</li>
+                        <li>Subjective answer type</li>
+                       </ul>
+                </p>
+            </div>
+            <div class="col span_1_of_4 box"> 
+                <ion-icon class="icon-big" name="bar-chart-outline"></ion-icon>
+                <h3>Get instant results</h3>
+                <p>Get instant results, which will help you in analysing your overall performance.</p>
+            </div>
+        </div>
+    </section>
+    <section class="section-steps" id="hiw" data-aos="fade-in" data-aos-duration="2000">
+        <div class="row">
+            <h2>How it works &mdash; Admins can easily create their own quizzes</h2>
+        </div>
+        <div class="row">
+            <div class="col span_1_of_2 steps-box">
+                <img data-aos="slide-right" data-aos-duration="1000" src="lapquiz.jpg" alt="phone-image" class="app-screen">
+            </div>
+            <div class="col span_1_of_2 steps-box">
+                <div class="works-step">
+                    <div>1</div>
+                    <p>Choose the type of questions</p>
+                </div>
+                <div class="works-step">
+                    <div>2</div>
+                    <p>Add questions and answers in the respective sections</p>
+                </div>
+                <div class="works-step">
+                    <div>3</div>
+                    <p>Add as many questions as you wish</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer>
+        <div class="row">
+            <div class="col span_1_of_2">
+                <ul class="footer-nav">
+                    <li><a href="#">About us</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Press</a></li>
+                    <li><a href="#">IOS App</a></li>
+                    <li><a href="#">Android App</a></li>
+                </ul>
+            </div>
+            <div class="col span_1_of_2">
+                <ul class="social-links">
+                    <li><ion-icon class="fb" name="logo-facebook"></ion-icon></li>
+                    <li><ion-icon class="twitter" name="logo-twitter"></ion-icon></li>
+                    <li><ion-icon class="google" name="logo-google"></ion-icon></li>
+                    <li><ion-icon class="insta" name="logo-instagram"></ion-icon></li>
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <p>Copyright &copy; 2023 by Techtitans.All rights reserved.</p>
+        </div>
+    </footer>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <script><!--on clicking the buttons broswer will scroll down to that particular section-->
+        $(document).ready(function(){
+          // Add smooth scrolling to all links
+          $("a").on('click', function(event) {
+        
+            // Make sure this.hash has a value before overriding default behavior
+            if (this.hash !== "") {
+              // Prevent default anchor click behavior
+              event.preventDefault();
+        
+              // Store hash
+              var hash = this.hash;
+        
+              // Using jQuery's animate() method to add smooth page scroll
+              // The optional number (800) specifies the number of milliseconds it takes to scroll to the specified area
+              $('html, body').animate({
+                scrollTop: $(hash).offset().top
+              }, 800, function(){
+        
+                // Add hash (#) to URL when done scrolling (default click behavior)
+                window.location.hash = hash;
+              });
+            } // End if
+          });
+        });
+    </script>
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script>
+        AOS.init();
+    </script>
+</body>
+</html>

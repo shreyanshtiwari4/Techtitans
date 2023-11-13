@@ -1,0 +1,73 @@
+/*small phones from 0 to 480px*/
+@media only screen and (max-width: 480px) {
+    section{padding: 25px 0;}
+  }
+
+/*small phones to small tablets from 481 to 767px*/
+@media only screen and (max-width: 767px) {
+    body{
+        font-size: 16px;
+    }
+    section{padding: 30px 0px;}
+    .row,
+    .hero-text-box{
+        padding: 0 4%;
+        font-size: 60%;
+    }
+    .btn btn-full{
+        margin-bottom: 30px !important;
+    }
+    .col{
+        width: 100%;
+        margin: 0 0 4% 0;
+    }
+    .main-nav{
+        transform: translateY(-50%);
+        font-size: small;
+    }
+    .app-screen{width: 40%;}
+    .steps-box:first-child{text-align: center;}
+    .works-step div{
+        height: 40px;
+        width: 40px;
+        margin-right: 15px;
+        padding: 4px;
+        font-size: 120%;
+    }
+    .works-step{margin-bottom: 20px;}
+    .works-step:last-of-type{margin-bottom: 20px;}
+}
+
+/*small tablets to big tablets from 768 to 1023px*/
+@media only screen and (max-width: 1023px) {
+    .long-copy{
+        width: 80%;
+        margin-left: 10%;
+    }
+    body{
+        font-size: 18px;
+    }
+    section{
+        padding: 60px 0;
+    }
+    .steps-box{margin-top: 10px;}
+    .steps-box:last-child{margin-top: 10px;}
+    .works-step{margin-bottom: 40px;}
+    .works-step:last-child{margin-bottom: 60px;}
+    .app-screen{width: 50%;}
+    .icon-small{
+        width: 17px;
+        margin-right: 5px;
+    }
+}
+
+/*big tablets 1200px*/
+@media only screen and (max-width: 1200px) {/*media queries is to make changes at a particular pixel or breakpoint*/
+    .hero-text-box{
+        width: 100%;
+        padding: 0 2%;
+    }
+    .row{
+        padding: 0 2%;
+    }
+}    
