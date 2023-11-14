@@ -123,6 +123,7 @@ const createUpdateFieldOptions = async (options, fieldId) => {
             throw err;
           } else {
             option.optionId = result.insertId;
+            option.fieldId = fieldId;
             resolve(option);
           }
         });
