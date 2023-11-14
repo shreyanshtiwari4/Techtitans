@@ -51,24 +51,24 @@ app.post("/login", (req, res) => {
     try {
       res.setHeader("Content-Type", "application/json");
       const userQuery = 'select user_name,email,password,r.role_id,r.role_name from users inner join roles r on users.role_id=r.role_id where user_name = ? and password = ?';
-      dbConn.query(userQuery, [userName,password], (err,result)=>{
-        if(err) throw err;
+      dbConn.query(userQuery, [userName, password], (err, result) => {
+        if (err) throw err;
         //if user exists
 
-        if(result.length>0){
+        if (result.length > 0) {
           return res.json(result[0]);
         }
-        else{
-          return res.json({error: "invalid username and/or password"});
+        else {
+          return res.json({ error: "invalid username and/or password" });
         }
       });
 
-    }catch(err){throw err;};
-    
-}
-else{
-  return res.json({error: "Please enter username and password!"});
-}
+    } catch (err) { throw err; };
+
+  }
+  else {
+    return res.json({ error: "Please enter username and password!" });
+  }
 });
 
 
@@ -95,7 +95,112 @@ app.post("/newForm", (req, res) => {
   });
 });
 
+/**
+ * @function createUpdateFieldOptions - create form field options
+ * @param {*} fields - List of fields
+ */
+const createUpdateFieldOptions = async (options, fieldId) => {
+  const optionInsertQuery = 'insert into field_options(OPTION_LABEL, IS_CORRECT, FIELD_ID) values(?, ?, ?)';
+  const optionUpdateQuery = 'update field_options set OPTION_LABEL = ?, IS_CORRECT = ? where option_id = ?';
 
+  if (options?.length) {
+    const fieldPromises = await options?.map((option) => new Promise((resolve, reject) => {
+      const { optionId, optionLabel, isCorrect } = option;
+
+      if (optionId) {
+        // If optionId is available then it is an update query for options
+        dbConn.query(optionUpdateQuery, [optionLabel, isCorrect, optionId], (err) => {
+          if (err) {
+            throw err;
+          } else {
+            resolve(option);
+          }
+        });
+      } else {
+        // If optionId is not available then it is an insert query for options
+        dbConn.query(optionInsertQuery, [optionLabel, isCorrect, fieldId], (err, result) => {
+          if (err) {
+            throw err;
+          } else {
+            option.optionId = result.insertId;
+            resolve(option);
+          }
+        });
+      }
+    }));
+
+    // Resolving All promise and wait till all promises get resolve;
+    return fieldPromises
+  } else {
+    return fieldList;
+  }
+}
+
+/**
+ * @function createFormFields - create form fields
+ * @param {*} fields - List of fields
+ */
+const createUpdateFormFields = async (fields, sectionId) => {
+  const fieldInsertQuery = 'insert into form_fields (field_primary_data, field_secondary_data, field_type_id, section_id, is_required) values (?,?,?,?,?)';
+  const fieldUpdateQuery = 'update form_fields set field_primary_data = ?, field_secondary_data = ?, field_type_id = ?, is_required = ? where field_id = ?';
+
+  if (fields?.length) {
+    const fieldPromise = await fields?.map((field) => new Promise((resolve, reject) => {
+      const { fieldPrimaryData, fieldSecondaryData, fieldTypeId, isRequired, fieldId, options } = field;
+
+      if (fieldId) {
+        // If fieldId is available then it is an update query for fields
+        dbConn.query(fieldUpdateQuery, [fieldPrimaryData, fieldSecondaryData, fieldTypeId, isRequired, fieldId], async (err, result) => {
+          if (err) {
+            throw err;
+          } else {
+            field.sectionId = sectionId;
+            if (fieldTypeId == 1) {
+              const dbOptionPromise = await createUpdateFieldOptions(options, fieldId);
+              await Promise.all(dbOptionPromise).then((resolvedOptionList) => {
+                field.options = resolvedOptionList;
+                resolve(field);
+              }).catch((err) => {
+                throw err;
+              });
+
+            } else {
+              field.options = [];
+              resolve(field);
+            }
+          }
+        });
+      } else {
+        // If fieldId is not available then it is an insert query for fields
+        dbConn.query(fieldInsertQuery, [fieldPrimaryData, fieldSecondaryData, fieldTypeId, sectionId, isRequired], async (err, result) => {
+          if (err) {
+            throw err;
+          } else {
+            field.fieldId = result.insertId;
+            field.sectionId = sectionId;
+            if (fieldTypeId == 1) {
+              const dbOptionPromise = await createUpdateFieldOptions(options, result.insertId);
+              await Promise.all(dbOptionPromise).then((resolvedOptionList) => {
+                field.options = resolvedOptionList;
+                resolve(field);
+              }).catch((err) => {
+                throw err;
+              });
+            }
+            else{
+              field.options = [];
+              resolve(field);
+            }
+          }
+        });
+      }
+    }));
+
+    return fieldPromise;
+  } else {
+    return new Promise();
+  }
+}
 
 /**
  * @function createUpdateFormSections - create or update form fields
@@ -116,9 +221,13 @@ const createUpdateFormSections = async (sections, formId) => {
             throw err;
           } else {
             // Will check for the list of fields and create new fields
-            // const dbFields = await createUpdateFormFields(fields, sectionId);
-            // section.fields = dbFields;
-            resolve(section);
+            const dbFieldsPromise = await createUpdateFormFields(fields, sectionId);
+            await Promise.all(dbFieldsPromise).then((resolvedFieldList) => {
+              section.fields = resolvedFieldList;
+              resolve(section);
+            }).catch((err) => {
+              throw err;
+            });
           }
         });
       } else {
@@ -128,13 +237,17 @@ const createUpdateFormSections = async (sections, formId) => {
             throw err;
           } else {
             section.sectionId = result.insertId;
-            // const dbFields = await createUpdateFormFields(fields, sectionId);
-            // section.fields = dbFields;
-            resolve(section);
+            const dbFieldsPromise = await createUpdateFormFields(fields, section.sectionId);
+            await Promise.all(dbFieldsPromise).then((resolvedFieldList) => {
+              section.fields = resolvedFieldList;
+              resolve(section);
+            }).catch((err) => {
+              throw err;
+            });
           }
         });
       }
-    }));    
+    }));
     return sectionPromise;
   } else {
     return new Promise();
@@ -155,6 +268,8 @@ app.post("/submitFormDetails", async (req, res) => {
       responseFormData.sections = sectionList;
 
       res.send({ data: responseFormData });
+    }).catch((err) => {
+      throw err;
     });
 
   } else {
