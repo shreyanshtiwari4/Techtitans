@@ -50,8 +50,8 @@ app.post("/login", (req, res) => {
   if (userName && password) {
     try {
       res.setHeader("Content-Type", "application/json");
-      const userQuery = 'select user_name,email,password,r.role_id,r.role_name from users inner join roles r on users.role_id=r.role_id where user_name = ? and password = ?';
-      dbConn.query(userQuery, [userName, password], (err, result) => {
+      const userQuery = 'select user_name,email,password,r.role_id,r.role_name from users inner join roles r on users.role_id=r.role_id where user_name = ? or email = ? and password = ?';
+      dbConn.query(userQuery, [userName, userName, password], (err, result) => {
         if (err) throw err;
         //if user exists
 
@@ -104,7 +104,7 @@ const createUpdateFieldOptions = async (options, fieldId) => {
   const optionUpdateQuery = 'update field_options set OPTION_LABEL = ?, IS_CORRECT = ? where option_id = ?';
 
   if (options?.length) {
-    const fieldPromises = await options?.map((option) => new Promise((resolve, reject) => {
+    const fieldOptionPromises = await options?.map((option) => new Promise((resolve, reject) => {
       const { optionId, optionLabel, isCorrect } = option;
 
       if (optionId) {
@@ -131,9 +131,9 @@ const createUpdateFieldOptions = async (options, fieldId) => {
     }));
 
     // Resolving All promise and wait till all promises get resolve;
-    return fieldPromises
+    return fieldOptionPromises
   } else {
-    return fieldList;
+    return new Promise();
   }
 }
 
