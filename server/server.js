@@ -424,4 +424,39 @@ app.post("/getFormDetails", (req, res) => {
   }
 });
 
+app.post("/submitUserForm", (req, res) => {
+  const formData = req?.body;
+  if (formData) {
+    const { userName, formId, fields } = formData;
+    const formQuery = "select form_id from formsubmission where form_id = ? and user_name = ?";
+    const formSubmitQuery = 'insert into formsubmission(user_name, form_id, field_id, field_type_id, answer) values(?,?,?,?,?)';
+
+    dbConn.query(formQuery, [formId, userName], async (err, result) => {
+      if (err) {
+        throw err;
+      } else if (result.length) {
+        res.send({ data: "form already submitted" });
+      } else {
+        if (fields?.length) {
+          const fieldPromises = await fields.map(field => new Promise((resolve, reject) => {
+            const { fieldId, fieldTypeId, answer } = field;
+            dbConn.query(formSubmitQuery, [userName, formId, fieldId, fieldTypeId, answer], (err, result) => {
+              if (err) {
+                throw err;
+              } else {
+                resolve(result);
+              }
+            })
+          }));
+          Promise.all(fieldPromises).then(() => {
+            res.send({
+              data: "Form submitted successfully"
+            });
+          });
+        }
+      }
+    });
+  }
+});
+
 
