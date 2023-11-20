@@ -459,4 +459,67 @@ app.post("/submitUserForm", (req, res) => {
   }
 });
 
+app.post("/quizzScore", (req, res) => {
+  let marks = 0, count = 0;
+  const { userName, formId } = req.body;
+  const formQuery = 'select * from formsubmission where user_name=? and form_id = ?';
+  dbConn.query(formQuery, [userName, formId], (err, result) => {
+    if (err) {
+      throw err;
+    }
+    if (result?.length) {
+      const resultPromises = result?.map(field => new Promise((resolve, reject) => {
+        const fieldId = field.field_id;
+        const fieldTypeId = field.field_type_id;
+        const answer = field.answer;
+        if (fieldTypeId == 1) {
+          const optionQuery = 'select is_correct from field_options where field_id = ? and option_id = ?';
+          dbConn.query(optionQuery, [fieldId, answer], (error, result) => {
+            if (error) {
+              throw error;
+            }
+            else {
+              resolve(result);
+              const data = result[0];
+              count+=1;
+              if (data.is_correct) {
+                marks += 1;
 
+              }
+            }
+          })
+        }
+
+        else {
+          const answerQuery = 'select answer from form_fields where field_id = ?';
+          dbConn.query(answerQuery, [fieldId], (err, result) => {
+            if (err) {
+              throw err;
+            }
+            else {
+              resolve(result);
+              const data = result[0]
+              count+=1;
+              if (data.answer.toLowerCase() === answer.toLowerCase()) {
+                marks += 1;
+
+              }
+            }
+          })
+        }
+      }));
+      Promise.all(resultPromises).then(() => {
+        res.send({
+          "total" : count,
+          "score": marks
+        });
+
+      });
+    }
+    else {
+      res.send({
+        data: "Quizz not given yet"
+      });
+    }
+  });
+});
