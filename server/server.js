@@ -276,4 +276,152 @@ app.post("/submitFormDetails", async (req, res) => {
   } else {
     throw { error: "emtpy Form" };
   }
-})
+});
+
+const formulateOptions = (options) => {
+  const optionFieldInstance = {};
+  options?.forEach(option => {
+    const _option = {
+      optionId: option.OPTION_ID,
+      fieldId: option.FIELD_ID,
+      optionLabel: option.OPTION_LABEL,
+      isCorrect: option.IS_CORRECT
+    }
+    if (optionFieldInstance[option.FIELD_ID]) {
+      optionFieldInstance[option.FIELD_ID].push(_option);
+    } else {
+      optionFieldInstance[option.FIELD_ID] = [_option];
+    }
+  });
+  return optionFieldInstance;
+}
+
+const formulateFields = (fields) => {
+  const fieldSectionInstance = {};
+  fields?.forEach(field => {
+    if (fieldSectionInstance[field.sectionId]) {
+      fieldSectionInstance[field.sectionId].push(field);
+    } else {
+      fieldSectionInstance[field.sectionId] = [field];
+    }
+  });
+  return fieldSectionInstance;
+}
+
+const getFieldsOptions = (fields) => {
+  const optionSelectionQuery = "select * from field_options where field_id in (?)";
+  const fieldIds = fields?.map(field => field.FIELD_ID);
+
+  if (fieldIds?.length) {
+    return new Promise((resolve, reject) => {
+      dbConn.query(optionSelectionQuery, [fieldIds], (err, result) => {
+        if (err) {
+          throw err;
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  } else {
+    return new Promise((resolve) => {
+      resolve([]);
+    })
+  }
+}
+
+const getSectionFields = (sections) => {
+  const fieldSelectionQuery = "select * from form_fields where section_id in (?)";
+
+  const sectionIds = sections?.map(section => section.SECTION_ID);
+
+  return new Promise((resolve, reject) => {
+    dbConn.query(fieldSelectionQuery, [sectionIds], async (err, result) => {
+      if (err) {
+        throw err;
+      } else {
+        // get fields options
+        const fieldList = [];
+        const _optionList = await getFieldsOptions(result);
+        const _fieldOptionInstance = formulateOptions(_optionList);
+        result?.forEach((fieldItem) => {
+          const _field = {
+            fieldId: fieldItem.FIELD_ID,
+            sectionId: fieldItem.SECTION_ID,
+            fieldPrimaryData: fieldItem.FIELD_PRIMARY_DATA,
+            fieldSecondaryData: fieldItem.FIELD_SECONDARY_DATA,
+            fieldTypeId: fieldItem.FIELD_TYPE_ID,
+            isRequired: fieldItem.IS_REQUIRED
+          };
+          _field.options = _fieldOptionInstance[fieldItem.FIELD_ID];
+          fieldList.push(_field);
+        });
+        resolve(fieldList);
+      }
+    });
+  });
+}
+
+const getSectionDetails = (formId) => {
+  const sectionSelectQuery = "select * from sections where form_id = ?";
+
+  return new Promise((resolve, reject) => {
+    dbConn.query(sectionSelectQuery, [formId], async (err, result) => {
+      if (err) {
+        throw err;
+      } else {
+        if (result?.length) {
+          const sectionList = [];
+          const fieldList = await getSectionFields(result);
+          const _sectionFieldInstance = formulateFields(fieldList);
+          result?.forEach((section) => {
+            const _section = {
+              sectionId: section.SECTION_ID,
+              formId: section.FORM_ID,
+              sectionLabel: section.SECTION_LABEL,
+              sectionOrder: section.SECTION_ORDER
+            };
+            _section.fields = _sectionFieldInstance[section.SECTION_ID];
+            sectionList.push(_section);
+          });
+          resolve(sectionList);
+        }
+        else{
+          resolve([]);
+        }
+      }
+    });
+  });
+}
+
+app.post("/getFormDetails", (req, res) => {
+
+  const bodyData = req?.body;
+  if (bodyData) {
+    const { formId, userId } = bodyData;
+    const formSelect = "select * from form where form_id = ?";
+
+    dbConn.query(formSelect, [formId], async (err, result) => {
+      if (err) {
+        throw err;
+      } else {
+        const formDetails = { ...result[0] };
+        const resData = {
+          formId: formDetails.FORM_ID,
+          formName: formDetails.FORM_NAME,
+          createdBy: formDetails.CREATED_BY,
+          createdDate: formDetails.CREATED_ON,
+          updatedBy: formDetails.UPDATED_BY,
+          updatedDate: formDetails.UPDATED_ON,
+          typeId: formDetails.TYPE_ID,
+        };
+        const sectionList = await getSectionDetails(formId);
+        if (sectionList?.length) {
+          resData.sections = sectionList;
+        }
+        res.send({ data: resData });
+      }
+    });
+  }
+});
+
+

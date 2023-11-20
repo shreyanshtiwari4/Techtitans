@@ -93,3 +93,12 @@ CREATE TABLE FIELD_OPTIONS(
     FOREIGN KEY(FIELD_ID) REFERENCES FORM_FIELDS(FIELD_ID) ON DELETE CASCADE ON UPDATE CASCADE,
     PRIMARY KEY(OPTION_ID)
 );
+
+CREATE TABLE formSubmission(
+    user_name VARCHAR(200),
+    form_id INT NOT NULL,
+    field_id INT NOT NULL,
+    field_type_id INT,
+    answer VARCHAR(200),
+    PRIMARY KEY(user_name, form_id, field_id)
+);
