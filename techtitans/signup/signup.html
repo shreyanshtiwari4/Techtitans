@@ -5,6 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SignUp</title>
     <link rel="stylesheet" href="signup.css">
+    <script>
+        function submitForm() {
+            var userName = document.getElementById("userName").value;
+            var email = document.getElementById("email").value;
+            var password = document.getElementById("password").value;
+            var roleId = document.getElementById("roleId").value;
+
+
+            window.fetch('http://localhost:3010/newUser', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ userName: userName, password: password, email: email, roleId: roleId})
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // Handle the response from the backend
+                    console.log(data);
+                    alert(data.data);
+
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+
+
+        }
+    </script>
 </head>
 <body>
     <div class="outer-box">
@@ -13,10 +42,9 @@
                 <h1>Signup</h1>
             </header>
             <main class="signup-body">
-                <form action="#">
                     <p>
                         <label for="username">Username</label>
-                        <input type="text" id="username" name="userName" required>
+                        <input type="text" id="userName" name="userName" required>
                     </p>
                     <p>
                         <label for="email">Email</label>
@@ -24,17 +52,17 @@
                     </p>
                     <p>
                         <label for="password">Password</label>
-                        <input type="text" id="username" name="password" required>
+                        <input type="password" id="password" name="password" required>
                     </p>
                     <p>
                         <label for="usertype">Usertype</label>
-                        <select name="typeId" class="choices">
+                        <select id="roleId" name="typeId" class="choices">
                             <option value=1>1.Admin</option>
                             <option value=2>2.Student</option>
                         </select>
                     </p>
                     <p>
-                        <input type="submit" id="submit" values="">
+                        <button onclick="submitForm()">SUBMIT</button>
                     </p>
                 </form>
             </main>

@@ -33,16 +33,30 @@ app.listen(PORT, () => {
 /*Adding new user*/
 
 app.post("/newUser", (req, res) => {
-  const { userName, pass, email, roleId } = req.body;
+  const { userName, password, email, roleId } = req.body;
+  const user = 'select user_name from users where user_name = ?';
   const sql = 'insert into users(user_name,password,email,role_id) values(?,?,?,?)';
-  dbConn.query(sql, [userName, pass, email, roleId], (err, result) => {
-    if (err) {
-      throw err;
+  dbConn.query(user, [userName], (err, result) => {
+    if (err) throw err;
+
+    if (result?.length) {
+      res.send({ data: "userName already existed!" });
     }
+
     else {
-      res.send("inserted");
+      dbConn.query(sql, [userName, password, email, roleId], (err, result) => {
+        if (err) {
+          throw err;
+        }
+        else {
+          res.send({data : "Inserted!!"});
+        }
+      });
+
     }
+
   });
+
 });
 
 app.post("/login", (req, res) => {
@@ -188,7 +202,7 @@ const createUpdateFormFields = async (fields, sectionId) => {
                 throw err;
               });
             }
-            else{
+            else {
               field.options = [];
               resolve(field);
             }
@@ -385,7 +399,7 @@ const getSectionDetails = (formId) => {
           });
           resolve(sectionList);
         }
-        else{
+        else {
           resolve([]);
         }
       }
@@ -481,7 +495,7 @@ app.post("/quizzScore", (req, res) => {
             else {
               resolve(result);
               const data = result[0];
-              count+=1;
+              count += 1;
               if (data.is_correct) {
                 marks += 1;
 
@@ -499,7 +513,7 @@ app.post("/quizzScore", (req, res) => {
             else {
               resolve(result);
               const data = result[0]
-              count+=1;
+              count += 1;
               if (data.answer.toLowerCase() === answer.toLowerCase()) {
                 marks += 1;
 
@@ -510,7 +524,7 @@ app.post("/quizzScore", (req, res) => {
       }));
       Promise.all(resultPromises).then(() => {
         res.send({
-          "total" : count,
+          "total": count,
           "score": marks
         });
 
@@ -523,3 +537,33 @@ app.post("/quizzScore", (req, res) => {
     }
   });
 });
+
+app.post("/formUser",(req,res)=>{
+  const createdBy = req.body.userName;
+  const sql = 'select form_id from form where created_by = ?';
+  const formInstance = {};
+
+  dbConn.query(sql, [createdBy], (err,result)=>{
+    if(err) throw err;
+
+    else{
+      if(result?.length){
+        result?.forEach(formId => {
+          if (formInstance[createdBy]) {
+            formInstance[createdBy].push(formId);
+          } else {
+            formInstance[createdBy] = [formId];
+          }
+        });
+
+        res.send(formInstance);
+
+      }
+
+      else{
+        res.send({data: "No form created yet!"});
+      }
+    }
+  })
+
+})

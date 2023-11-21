@@ -57,7 +57,13 @@ body{
     margin: 4px;
 }
 
-.signup-body p input[type="submit"]{
+.signup-body p button{
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #cccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    margin: 4px;
     background-color: #3498db;
     border: none;
     color: white;
