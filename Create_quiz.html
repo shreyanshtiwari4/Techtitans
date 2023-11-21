@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Quizard : Create Your Quiz</title>
+    <link rel="shortcut icon" type="image/png" href="img/favicon.png" />
+    <!-- Online Links -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+        integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+    <!-- Css Files -->
+    <link rel="stylesheet" href="../css/headerstyl.css">
+    <link rel="stylesheet" href="../css/createquiz.css">
+    <link rel="stylesheet" href="../css/home_footer_style.css">
+    <!-- JavaScript Files -->
+
+
+
+    <script src="https://www.gstatic.com/firebasejs/7.5.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.5.2/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.5.2/firebase-auth.js"></script>
+
+</head>
+
+<body>
+    <div class="test" style="padding-bottom: 30px">
+        <div class="header-area-style ">
+            <nav class="navbar navbar-expand-lg bg-dark navbar-dark bg-transparent ">
+                <a class="navbar-brand" href="../index.html">
+                    <img src="../img/logo/logo2.png" style=" width: 190px;" alt="Logo">
+                </a>
+                <!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+                    <span class="navbar-toggler-icon"></span>
+                </button> -->
+                <div class="collapse navbar-collapse justify-content-center" id="collapsibleNavbar">
+                    <ul class="navbar-nav" style="margin-right: 200px;">
+                        <li class="nav-item">
+                            <a class="nav-link" href="../index.html">Home</a>
+                        </li>
+                        <li class="nav-item active" style="min-width: 96.016px;">
+                            <a class="nav-link" href="Contact_us.html">Contact-Us</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" style="min-width: 82.695px;" href="About_us.html">About-Us</a>
+                        </li>
+                    </ul>
+                    <!-- <ul class="navbar-nav" id="nav-avatar" style="float: left; display: none;">
+                        <li id="info-bar">
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle"
+                                    style=" border-radius: 30px; border: 0; background-color: transparent;"
+                                    type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
+                                    aria-expanded="false">
+                                    <i class="fa fa-user" style="font-size: 25px;"></i>
+                                    <label id="profile-name-avatar"
+                                        style="margin-left: 7px; font-size: 17px; text-transform: none; color: white;"></label>
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <a class="dropdown-item" href="profile.html">Profile</a>
+                                    <a class="dropdown-item" onclick="logOut();">Log Out</a>
+                                </div>
+                            </div>
+                        </li>
+                    </ul> -->
+                </div>
+            </nav>
+        </div>
+        <hr>
+
+        <!-- Start Image :) -->
+
+        <div class="center set-title " style="justify-content: center; text-align: center;">
+            <h1>Create Your Quiz</h1>
+            <!-- in the perivous line you need to change the title with your page title -->
+        </div>
+    </div>
+
+    <div class="container mt-3" id="b3">
+        <div class='p-2 flex-fill Qusistion'>
+            <label for="name_quiz">Name Of Quiz:- </label>
+            <input type="text" style="margin: 15px;" id="name_quiz">
+            <br>
+            <!-- <label for="type_quiz">Type Of Quiz:- </label> -->
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown"
+                    aria-expanded="false">
+                    Type of Quiz
+                </button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="#">Business</a>
+                    <a class="dropdown-item" href="#">Sport</a>
+                    <a class="dropdown-item" href="#">Academic</a>
+                </div>
+            </div>
+
+            <br>
+            <label for="time_id">
+                Time Of Quiz:-
+            </label><br>
+            <div style="display: inline;" class="def-number-input number-input safari_only" id=time_id>
+                <button onclick="this.parentNode.querySelector('input[type=number]').stepDown()" class="minus"></button>
+                <input class="quantity" min="1" name="quantity" value="1" type="number" id="time_quiz">
+                <button onclick="this.parentNode.querySelector('input[type=number]').stepUp()" class="plus"></button>
+            </div>
+            Minutes
+            <br>
+            <label>
+                Number of point for each question:-
+            </label>
+            <br>
+            <div style="display: inline; " class="def-number-input number-input safari_only">
+                <button onclick="this.parentNode.querySelector('input[type=number]').stepDown()" class="minus"></button>
+                <input class="quantity" min="1" name="quantity" value="1" step="1" type="number" id="point">
+                <button onclick="this.parentNode.querySelector('input[type=number]').stepUp()" class="plus"></button>
+            </div>
+        </div>
+    </div>
+
+    <!--  question  -->
+    <div class="container mt-3" id="questions">
+        <!-- adding question using js -->
+    </div>
+
+    <div class="p-2 flex-fill text-center" id="b1">
+        <button type="button" class="btn btn-primary" onclick="add_one_question()" style="width: 40%">Add Question with
+            one
+            answer</button>
+        <button type="button" class="btn btn-primary" onclick="add_multi_question()" style="width: 40%;">Add Question
+            with
+            many answer</button>
+    </div>
+    <div class="p-2 flex-fill text-center" id="b2">
+        <div id="error" style="color: red; margin: 10px;font-size: large"></div>
+        <button id="finish" class="btn btn-primary" onclick="validation()" style="width: 40%;">Finish</button>
+    </div>
+
+
+    <!-- Start Footer -->
+    <div>
+
+        <div class="mt-5 pt-5 pb-5 footer">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-5 col-xs-12 about-company">
+                        <h2 class="orange-text">Quizard</h2>
+                        <p class="pr-5 text-white-50"> web Application that help Instructors to generate their custom
+                            Quiz <br>
+                            <span class="orange-text">Quizard</span> Was made with <span
+                                style="color: red; font-size: 20px;">♥</span>
+                            by 3 Students.
+                        </p>
+                    </div>
+                    <div class="col-lg-3 col-xs-12 links">
+                        <h4 class="mt-lg-0 mt-sm-3 orange-text">Quick Links</h4>
+                        <ul class="m-0 p-0">
+                            <li><a href="../index.html">Home</a></li>
+                            <li><a href="Contact_us.html">Contact Us</a></li>
+                            <li><a href="About_us.html">About US</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-4 col-xs-12 location">
+                        <h4 class="mt-lg-0 mt-sm-4 orange-text">Location</h4>
+                        <p><i class="fa fa-map-marker  mr-3"></i> MNNIT, Allahabad , UP </p>
+                    </div>
+                </div>
+                <div class="row mt-5">
+                    <div class="col copyright">
+                        <p class=""><small class="text-white-50">© 2023. All Rights Reserved For <span
+                                    class="orange-text">Quizard</span>.</small></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- End Footer  -->
+
+
+    <script src="../js/createquiz.js"></script>
+</body>
+
+</html>
