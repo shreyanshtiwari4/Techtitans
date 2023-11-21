@@ -63,7 +63,7 @@
 
 /*  */
  .test{ 
-    background-image: url("../../img/background/bradcam.png");
+    background-image: url("../img/bradcam.png");
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
