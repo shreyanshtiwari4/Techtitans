@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizard - Create your own Quiz</title>
+    <!-- <link rel="stylesheet" href="createquiz.css"> -->
+</head>
+<body>
+    <div id="quizDetailsForm">
+        <label for="quizName">Name Of Quiz:- </label>
+        <input type="text" id="quizName" name="quizName" style="margin: 15px;">
+
+        <label for="quizType">Quiz Type: </label>
+        <select id="quizType" name="quizType">
+            <option class="dropdown-item" value="Business">Business</option>
+            <option class="dropdown-item" value="Sport">Sport</option>
+            <option class="dropdown-item" value="Academic">Academic</option>
+        </select>
+
+        <label for="quizTime">Time of Quiz(Minutes):- </label>
+        <button onclick="this.parentNode.querySelector('input[type=number]').stepDown()" class="minus"></button>
+        <input class="quantity" min="1" name="quizTime" value="1" type="number" id="quizTime">
+        <button onclick="this.parentNode.querySelector('input[type=number]').stepUp()" class="plus"></button>
+
+        <button type="button" onclick="addQuizDetails()">Create Quiz</button>
+    </div>
+
+    <div id="sectionForm" style="display: none;">
+        <label for="sectionName">Section Name: </label>
+        <input type="text" id="sectionName" name="sectionName">
+
+        <label for="questionType">Question Type: </label>
+        <select id="questionType" name="questionType">
+            <option value="MCQ">Multiple Choice Question</option>
+            <option value="ShortAnswer">Short Answer</option>
+            <option value="truefalse">True/False</option>
+            <option value="LongAnswer">Long Answer</option>
+        </select>
+
+        <button type="button" onclick="addSection()">Add Section</button>
+    </div>
+    <div id="quizForm">
+        <!-- Questions will be dynamically added here -->            
+    </div>
+    <!-- <button type="button" onclick="addQuestion(questionType)">Add Question</button> -->
+    <button type="submit" onclick="submitQuizForm()" style="display: none;">Submit Quiz</button>
+    <script src="createquiz.js"></script>
+</body>
+</html>
