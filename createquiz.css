@@ -167,9 +167,13 @@ button[type="button"] {
     border-radius: 4px;
 }
 
+.plus img,.minus img{
+	width : 20px;
+}
+
 .plus:hover,
 .minus:hover {
-    background-color: #0056b3;
+    background-color: #bcd6f1;
 }
 
 /* Button styling */
