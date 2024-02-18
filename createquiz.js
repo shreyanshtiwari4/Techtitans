@@ -4,6 +4,43 @@ let quizForm = document.getElementById("questionForm");
 let sectionCounter = 0;
 let questionCounter = 0;
 
+let menu_visible = false;
+function toggle_dropdown() {
+	let dd = document.querySelector('.dd_wrapper');
+	if (menu_visible) {
+		dd.classList.remove('show');
+		menu_visible = false;
+	} else {
+		dd.classList.add('show');
+		menu_visible = true;
+	}
+}
+
+const toDashboard = () => {
+	window.location = './dashboard.html';
+};
+
+const signOut = () => {
+	sessionStorage.clear();
+
+	let requestOptions = {
+		method: 'GET',
+		mode: 'cors',
+		credentials: 'include'
+	};
+	fetch(`${baseURL}/user/signOut`, requestOptions)
+		.then(result => result.json())
+		.then(res => {
+			if (res.STATUS === 1) {
+				window.location = 'signIn.html';
+			} else {
+				alert(res.MESSAGE);
+			}
+		})
+		.catch(error => console.log('error', error));
+};
+
+
 function addQuizDetails() {
     const quizName = document.getElementById("quizName").value;
     const quizType = document.getElementById("quizName").value;
