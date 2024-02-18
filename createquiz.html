@@ -4,12 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quizard - Create your own Quiz</title>
-    <!-- <link rel="stylesheet" href="createquiz.css"> -->
+    <link rel="stylesheet" href="createquiz.css">  
 </head>
 <body>
+    <div class="nav_bar">
+
+        <h2>QUIZZEY</h2>
+        <div class="user_name" onclick="toggle_dropdown()">
+            <h2 id="name">FIRST_NAME</h2>
+            <img
+                src="https://icon-library.com/images/default-user-icon/default-user-icon-4.jpg"
+                alt="Profile Picture"
+            />
+        </div>
+        <div class="dd_wrapper" id="dropdown">
+            <button onclick="toDashboard()">Dashboard</button>  
+            <button>Profile</button>
+            <hr />
+            <button onclick="signOut()">Sign Out</button>
+        </div>
+    </div>
+
+<div class="quizsection">
     <div id="quizDetailsForm">
+        <h1>CREATE QUIZ</h1>
         <label for="quizName">Name Of Quiz:- </label>
-        <input type="text" id="quizName" name="quizName" style="margin: 15px;">
+        <input type="text" id="quizName" name="quizName" >
 
         <label for="quizType">Quiz Type: </label>
         <select id="quizType" name="quizType">
@@ -19,9 +39,15 @@
         </select>
 
         <label for="quizTime">Time of Quiz(Minutes):- </label>
-        <button onclick="this.parentNode.querySelector('input[type=number]').stepDown()" class="minus"></button>
-        <input class="quantity" min="1" name="quizTime" value="1" type="number" id="quizTime">
-        <button onclick="this.parentNode.querySelector('input[type=number]').stepUp()" class="plus"></button>
+        <div class="plusminus">
+            <button onclick="this.parentNode.querySelector('input[type=number]').stepDown()" class="minus"><img
+                src="https://icon-library.com/images/default-user-icon/default-user-icon-4.jpg"
+                alt="Profile Picture"
+            /></button>
+            <input class="quantity" min="1" name="quizTime" value="1" type="number" id="quizTime">
+            <button onclick="this.parentNode.querySelector('input[type=number]').stepUp()" class="plus"></button>
+        </div>
+        
 
         <button type="button" onclick="addQuizDetails()">Create Quiz</button>
     </div>
@@ -45,6 +71,7 @@
     </div>
     <!-- <button type="button" onclick="addQuestion(questionType)">Add Question</button> -->
     <button type="submit" onclick="submitQuizForm()" style="display: none;">Submit Quiz</button>
+</div>
     <script src="createquiz.js"></script>
 </body>
 </html>
