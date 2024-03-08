@@ -1,3 +1,6 @@
+const obj = {};
+const urlParams = new URLSearchParams(window.location.search);
+const userName = urlParams.get("userName");
 let quizDetailsForm = document.getElementById("quizDetailsForm");
 let sectionForm = document.getElementById("sectionForm");
 let quizForm = document.getElementById("questionForm");
@@ -43,20 +46,49 @@ const signOut = () => {
 
 function addQuizDetails() {
     const quizName = document.getElementById("quizName").value;
-    const quizType = document.getElementById("quizName").value;
-    const quizTime = document.getElementById("quizName").value;
+    const quizType = document.getElementById("quizType").value;
+    const quizTime = document.getElementById("quizTime").value;
 
     if(quizName && quizTime && quizType) {
+        obj.formName = quizName;
+        obj.createdBy = userName;
+        obj.typeId = quizType;
+        obj.duration = quizTime;
+        window.fetch('http://localhost:3010/newForm', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(obj)
+        })
+            .then(response => response.json())
+            .then(data => {
+                // Handle the response from the backend
+                obj.formId = data.formId;
+                console.log(obj);
+                
+                
+
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+
         quizDetailsForm.style.display = "none";
         sectionForm.style.display = "block";
-    }else{
+
+
+    }
+        
+    else{
         alert("Please fill in all the details inorder to create a quiz.")
     }
 }
-
 function addSection() {
     const sectionName = document.getElementById("sectionName").value;
     const questionType = document.getElementById("questionType").value;
+    console.log(questionType);
+    
 
     if(sectionName && questionType){
         document.getElementById("sectionForm").style.display = "none";
@@ -86,7 +118,7 @@ function addSection() {
         submitSectionButton.type = "button";
         submitSectionButton.textContent = "Submit Section";
         submitSectionButton.onclick = function() {
-            submitSection(sectionCounter, sectionName);
+            submitSection(sectionCounter, sectionName,questionType);
         };
         submitSectionButton.style = "none";
         questionForm.appendChild(submitSectionButton);
@@ -114,7 +146,9 @@ function addQuestion(sectionId, questionType) {
 
     let questionInput = document.createElement("input");
     questionInput.type = "text";
+    questionInput.className ="label";
     questionInput.name = `question-${sectionId}-${questionCounter}:`;
+    questionInput.id = `question-${questionCounter}`;
 
     // Add the 'for' attribute to associate the label with the input field
     questionLabel.setAttribute("for", `question-${sectionId}-${questionCounter}`);
@@ -122,7 +156,8 @@ function addQuestion(sectionId, questionType) {
     questionDiv.appendChild(questionLabel);
     questionDiv.appendChild(questionInput);
 
-    if (questionType === "MCQ") {
+
+    if (questionType == 1) {
        // Add options and radio buttons
         for (let i = 0; i < 4; i++) {
             let optionLabel = document.createElement("label");
@@ -130,14 +165,16 @@ function addQuestion(sectionId, questionType) {
             let optionInput = document.createElement("input");
             optionInput.type = "text";
             optionInput.name = `option-${sectionId}-${questionCounter}-${i + 1}`;
+            optionInput.id = `option-${questionCounter}-${i+1}`;
             let optionRadio = document.createElement("input");
             optionRadio.type = "radio";
+            optionRadio.id = `correct-${questionCounter}-${i+1}`;
             optionRadio.name = `correct-answer-${sectionId}-${questionCounter}`;
             optionLabel.appendChild(optionInput);
             optionLabel.appendChild(optionRadio);
             questionDiv.appendChild(optionLabel);
         }
-    }else if (questionType === "ShortAnswer") {
+    }else if (questionType == 2) {
          
         let answerLabel = document.createElement("label");
         answerLabel.innerHTML = "Correct Answer:";
@@ -145,22 +182,24 @@ function addQuestion(sectionId, questionType) {
         let answerInput = document.createElement("input");
         answerInput.type = "text";
         answerInput.name = `answer-${sectionId}-${questionCounter}`;
+        answerInput.id = `answer-${questionCounter}`;
 
         questionDiv.appendChild(answerLabel);
         questionDiv.appendChild(answerInput);
     }
-    else if (questionType === "truefalse"){
+    else if (questionType == 3){
         let answerLabel = document.createElement("label");
         answerLabel.innerHTML = "Correct Answer:";
 
         let answerInput = document.createElement("input");
         answerInput.type = "text";
         answerInput.name = `answer-${sectionId}-${questionCounter}`;
+        answerInput.id = `answer-${questionCounter}`;
 
         questionDiv.appendChild(answerLabel);
         questionDiv.appendChild(answerInput);
     
-    }else if (questionType === "LongAnswer") {
+    }else if (questionType == 4) {
          
         let answerLabel = document.createElement("label");
         answerLabel.innerHTML = "Correct Answer:";
@@ -168,6 +207,7 @@ function addQuestion(sectionId, questionType) {
         let answerInput = document.createElement("input");
         answerInput.type = "text";
         answerInput.name = `answer-${sectionId}-${questionCounter}`;
+        answerInput.id = `answer-${questionCounter}`;
 
         questionDiv.appendChild(answerLabel);
         questionDiv.appendChild(answerInput);
@@ -177,12 +217,56 @@ function addQuestion(sectionId, questionType) {
 
     // Show submit section button after adding the first question
     if (questionCounter === 1) {
-        submitSectionButton.style = "block"
+        submitSection.style = "block"
     }
 }
-
-function submitSection(sectionId, sectionName) {
+const _sections = [];
+function submitSection(sectionId, sectionName, questionType) {
     // Hide the current question form
+    const sectionObj = {};
+    sectionObj.sectionId = null;
+    sectionObj.formId = obj.formId;
+    sectionObj.sectionLabel = sectionName;
+    const _fields = [];
+    let ele = document.getElementsByClassName("questionDiv");
+    if(ele.length){
+        for(let i = 1; i<=ele.length;i++){
+            console.log("hello");
+            const fieldInstance = {fieldId:null, sectionId:null, fieldTypeId:questionType, isRequired:true};
+            let question = document.getElementById(`question-${i}`);
+            fieldInstance.fieldPrimaryData = question.value;
+            if(questionType == 1){
+                const _options = [];
+                for(let j=1;j<=4;j++){
+                    const optionInstance = {optionId:null, fieldId:null};
+                    let option = document.getElementById(`option-${i}-${j}`);
+                    optionInstance.optionLabel = option.value;
+                    let answer = document.getElementById(`correct-${i}-${j}`);
+                    if(answer.checked){
+                        optionInstance.isCorrect = true;
+                    }
+                    else{
+                        optionInstance.isCorrect = false;
+                    }
+                    _options.push(optionInstance);
+
+                }
+                fieldInstance.options = _options;
+
+            }
+            else{
+                let answer = document.getElementById(`answer-${i}`);
+                fieldInstance.correctAnswer = answer.value;
+            }
+            _fields.push(fieldInstance);
+            
+        }
+
+    }
+    sectionObj.fields = _fields;
+    _sections.push(sectionObj);
+    console.log(_sections);
+
     document.getElementById(`questionForm-${sectionId}`).style.display = "none";
 
     // Display the newly created section
@@ -208,5 +292,8 @@ function submitSection(sectionId, sectionName) {
     document.getElementById(`questionsContainer-${sectionId}`).innerHTML = "";
 
     // Alert the user
-    alert(`Section ${sectionId} submitted successfully!`);
+    //alert(`Section ${sectionId} submitted successfully!`);
+
 }
+
+
