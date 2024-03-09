@@ -9,7 +9,7 @@
 <body>
     <div class="nav_bar">
 
-        <h2>QUIZZEY</h2>
+        <h2>QUIZARD</h2>
         <div class="user_name" onclick="toggle_dropdown()">
             <h2 id="name">FIRST_NAME</h2>
             <img
@@ -67,10 +67,10 @@
         <button type="button" onclick="addSection()">Add Section</button>
     </div>
     <div id="quizForm">
-        <!-- Questions will be dynamically added here -->            
+        <!-- Questions will be dynamically added here -->   
+        <button id="addNewSectionButton" style="display: none;" onclick="addNewSection()">Add New Section</button>
+        <button id="submitQuizButton" type="submit" onclick="submitQuizForm()" style="display: none;">Submit Quiz</button>         
     </div>
-    <!-- <button type="button" onclick="addQuestion(questionType)">Add Question</button> -->
-    <button type="submit" onclick="submitQuizForm()" style="display: none;">Submit Quiz</button>
 </div>
     <script src="createquiz.js"></script>
 </body>
