@@ -64,7 +64,7 @@ app.post("/login", (req, res) => {
   if (userName && password) {
     try {
       res.setHeader("Content-Type", "application/json");
-      const userQuery = 'select user_name,email,password,r.role_id,r.role_name from users inner join roles r on users.role_id=r.role_id where user_name = ? or email = ? and password = ?';
+      const userQuery = 'select user_name,email,password,r.role_id,r.role_name from users inner join roles r on users.role_id=r.role_id where (user_name = ? or email = ?) and password = ?';
       dbConn.query(userQuery, [userName, userName, password], (err, result) => {
         if (err) throw err;
         //if user exists
@@ -91,9 +91,10 @@ app.post("/newForm", (req, res) => {
   const typeId = req.body.typeId;
   const createdBy = req.body.createdBy;
   const createdDate = new Date();
-  const sql = 'insert into form(form_name,type_id,created_by,created_on) values(?,?,?,?)';
+  const duration = req.body.duration;
+  const sql = 'insert into form(form_name,type_id,created_by,created_on,duration) values(?,?,?,?,?)';
 
-  dbConn.query(sql, [formName, typeId, createdBy, createdDate], (err, result) => {
+  dbConn.query(sql, [formName, typeId, createdBy, createdDate,duration], (err, result) => {
     if (err) {
       console.log(err);
     } else {
@@ -102,7 +103,8 @@ app.post("/newForm", (req, res) => {
         formName,
         typeId,
         createdBy,
-        createdDate
+        createdDate,
+        duration
       }
       res.send(formData);
     }
@@ -156,16 +158,16 @@ const createUpdateFieldOptions = async (options, fieldId) => {
  * @param {*} fields - List of fields
  */
 const createUpdateFormFields = async (fields, sectionId) => {
-  const fieldInsertQuery = 'insert into form_fields (field_primary_data, field_secondary_data, field_type_id, section_id, is_required) values (?,?,?,?,?)';
-  const fieldUpdateQuery = 'update form_fields set field_primary_data = ?, field_secondary_data = ?, field_type_id = ?, is_required = ? where field_id = ?';
+  const fieldInsertQuery = 'insert into form_fields (field_primary_data, field_secondary_data, field_type_id, section_id, is_required,answer) values (?,?,?,?,?,?)';
+  const fieldUpdateQuery = 'update form_fields set field_primary_data = ?, field_secondary_data = ?, field_type_id = ?, is_required = ?, answer = ? where field_id = ?';
 
   if (fields?.length) {
     const fieldPromise = await fields?.map((field) => new Promise((resolve, reject) => {
-      const { fieldPrimaryData, fieldSecondaryData, fieldTypeId, isRequired, fieldId, options } = field;
+      const { fieldPrimaryData, fieldSecondaryData, fieldTypeId, isRequired, fieldId, options,answer } = field;
 
       if (fieldId) {
         // If fieldId is available then it is an update query for fields
-        dbConn.query(fieldUpdateQuery, [fieldPrimaryData, fieldSecondaryData, fieldTypeId, isRequired, fieldId], async (err, result) => {
+        dbConn.query(fieldUpdateQuery, [fieldPrimaryData, fieldSecondaryData, fieldTypeId, isRequired, answer,fieldId], async (err, result) => {
           if (err) {
             throw err;
           } else {
@@ -180,14 +182,13 @@ const createUpdateFormFields = async (fields, sectionId) => {
               });
 
             } else {
-              field.options = [];
               resolve(field);
             }
           }
         });
       } else {
         // If fieldId is not available then it is an insert query for fields
-        dbConn.query(fieldInsertQuery, [fieldPrimaryData, fieldSecondaryData, fieldTypeId, sectionId, isRequired], async (err, result) => {
+        dbConn.query(fieldInsertQuery, [fieldPrimaryData, fieldSecondaryData, fieldTypeId, sectionId, isRequired,answer], async (err, result) => {
           if (err) {
             throw err;
           } else {
@@ -203,7 +204,6 @@ const createUpdateFormFields = async (fields, sectionId) => {
               });
             }
             else {
-              field.options = [];
               resolve(field);
             }
           }
@@ -282,7 +282,7 @@ app.post("/submitFormDetails", async (req, res) => {
       const responseFormData = { ...formData };
       responseFormData.sections = sectionList;
 
-      res.send({ data: responseFormData });
+      res.send(responseFormData );
     }).catch((err) => {
       throw err;
     });
@@ -291,6 +291,8 @@ app.post("/submitFormDetails", async (req, res) => {
     throw { error: "emtpy Form" };
   }
 });
+
+
 
 const formulateOptions = (options) => {
   const optionFieldInstance = {};
@@ -366,7 +368,14 @@ const getSectionFields = (sections) => {
             fieldTypeId: fieldItem.FIELD_TYPE_ID,
             isRequired: fieldItem.IS_REQUIRED
           };
-          _field.options = _fieldOptionInstance[fieldItem.FIELD_ID];
+          if(fieldItem.FIELD_TYPE_ID==1){
+            _field.options = _fieldOptionInstance[fieldItem.FIELD_ID];
+
+          }
+          else{
+            _field.answer = fieldItem.ANSWER;
+          }
+          
           fieldList.push(_field);
         });
         resolve(fieldList);
@@ -427,6 +436,7 @@ app.post("/getFormDetails", (req, res) => {
           updatedBy: formDetails.UPDATED_BY,
           updatedDate: formDetails.UPDATED_ON,
           typeId: formDetails.TYPE_ID,
+          duration : formDetails.DURATION
         };
         const sectionList = await getSectionDetails(formId);
         if (sectionList?.length) {
@@ -538,23 +548,28 @@ app.post("/quizzScore", (req, res) => {
   });
 });
 
-app.post("/formUser",(req,res)=>{
+app.post("/getFormId",(req,res)=>{
   const createdBy = req.body.userName;
-  const sql = 'select form_id from form where created_by = ?';
+  const sql = 'select form_id , form_name, type_id from form where created_by = ?';
   const formInstance = {};
+  const _formInstance = [];
 
   dbConn.query(sql, [createdBy], (err,result)=>{
     if(err) throw err;
 
     else{
       if(result?.length){
-        result?.forEach(formId => {
-          if (formInstance[createdBy]) {
-            formInstance[createdBy].push(formId);
-          } else {
-            formInstance[createdBy] = [formId];
-          }
+        
+
+        result?.forEach(param => {
+          const obj = {};
+          obj.formId = param.form_id;
+          obj.formName = param.form_name;
+          obj.formType = param.type_id
+          _formInstance.push(obj);
+
         });
+        formInstance.userName = _formInstance;
 
         res.send(formInstance);
 
