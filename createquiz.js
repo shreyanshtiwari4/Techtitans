@@ -9,9 +9,6 @@ let questionCounter = 0;
 
 let menu_visible = false;
 
-function submitQuizForm() {
-
-}
 
 function toggle_dropdown() {
 	let dd = document.querySelector('.dd_wrapper');
@@ -25,7 +22,7 @@ function toggle_dropdown() {
 }
 
 const toDashboard = () => {
-	window.location = './dashboard.html';
+	window.location = './dashboard.html?userName='+userName;
 };
 
 const signOut = () => {
@@ -245,7 +242,7 @@ function submitSection(sectionId, sectionName, questionType) {
                 }
                 else{
                     let answer = document.getElementById(`answer-${sectionId}-${i}`);
-                    fieldInstance.correctAnswer = answer.value;
+                    fieldInstance.answer = answer.value;
                 }
                 _fields.push(fieldInstance);
                 
@@ -290,6 +287,31 @@ function addNewSection(){
 
     document.getElementById("addNewSectionButton").style.display = "none";
     document.getElementById("submitQuizButton").style.display = "none";
+}
+
+function submitQuizForm(){
+    obj.sections = _sections;
+    window.fetch('http://localhost:3010/submitFormDetails', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(obj)
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Handle the response from the backend
+        console.log(data);
+        alert(`Form created with form id ${data.formId}`);
+        window.location.href = "http://127.0.0.1:5500/createquiz.html?userName=" +userName;
+
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+    
+
+
 }
 
 
