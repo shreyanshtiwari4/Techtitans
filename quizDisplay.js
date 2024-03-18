@@ -1,230 +1,53 @@
-const getDummyData = () => {
-    return {
-      formId: 6,
-      formName: "tcs",
-      createdBy: "guru21792",
-      typeId: 1,
-      sections: [
-          {
-              sectionId: null,
-              formId: 6,
-              sectionLabel: "section A",
-              sectionOrder: 1,
-              fields: [
-                  {
-                      fieldId: null,
-                      sectionId: null,
-                      fieldPrimaryData: "2+2=?",
-                      fieldSecondaryData: "Addition",
-                      fieldTypeId: 1,
-                      isRequired: true,
-                      options: [
-                          {
-                              optionId: null,
-                              fieldId: null,
-                              optionLabel: 8,
-                              isCorrect: false
-                          },
-                          {
-                              optionId: null,
-                              fieldId: null,
-                              optionLabel: 5,
-                              isCorrect: false
-                          },
-                          {
-                              optionId: null,
-                              fieldId: null,
-                              optionLabel: 4,
-                              isCorrect: true
-                          },
-                          {
-                              optionId: null,
-                              fieldId: null,
-                              optionLabel: 11,
-                              isCorrect: false
-                          }
-                      ]
-                  }
-              ]
-          },
-          {
-            sectionId: null,
-            formId: 6,
-            sectionLabel: "section A",
-            sectionOrder: 1,
-            fields: [
-                {
-                    fieldId: null,
-                    sectionId: null,
-                    fieldPrimaryData: "2+2=?",
-                    fieldSecondaryData: "Addition",
-                    fieldTypeId: 1,
-                    isRequired: true,
-                    options: [
-                        {
-                            optionId: null,
-                            fieldId: null,
-                            optionLabel: 8,
-                            isCorrect: false
-                        },
-                        {
-                            optionId: null,
-                            fieldId: null,
-                            optionLabel: 5,
-                            isCorrect: false
-                        },
-                        {
-                            optionId: null,
-                            fieldId: null,
-                            optionLabel: 4,
-                            isCorrect: true
-                        },
-                        {
-                            optionId: null,
-                            fieldId: null,
-                            optionLabel: 11,
-                            isCorrect: false
-                        }
-                    ]
-                }
-            ]
-          },
-          {
-            sectionId: null,
-            formId: 6,
-            sectionLabel: "section A",
-            sectionOrder: 1,
-            fields: [
-                {
-                    fieldId: null,
-                    sectionId: null,
-                    fieldPrimaryData: "2+2=?",
-                    fieldSecondaryData: "Addition",
-                    fieldTypeId: 1,
-                    isRequired: true,
-                    options: [
-                        {
-                            optionId: null,
-                            fieldId: null,
-                            optionLabel: 8,
-                            isCorrect: false
-                        },
-                        {
-                            optionId: null,
-                            fieldId: null,
-                            optionLabel: 5,
-                            isCorrect: false
-                        },
-                        {
-                            optionId: null,
-                            fieldId: null,
-                            optionLabel: 4,
-                            isCorrect: true
-                        },
-                        {
-                            optionId: null,
-                            fieldId: null,
-                            optionLabel: 11,
-                            isCorrect: false
-                        }
-                    ]
-                }
-            ]
-          },
-          {
-            sectionId: null,
-            formId: 6,
-            sectionLabel: "s2",
-            sectionOrder: 1,
-            fields: [
-                {
-                    fieldId: null,
-                    sectionId: null,
-                    fieldPrimaryData: "temp",
-                    fieldSecondaryData: "Addition",
-                    fieldTypeId: 1,
-                    isRequired: true,
-                    options: [
-                        { optionId: null, fieldId: null, optionLabel: "1", isCorrect: false },
-                        { optionId: null, fieldId: null, optionLabel: "23", isCorrect: false },
-                        { optionId: null, fieldId: null, optionLabel: "211", isCorrect: true },
-                        { optionId: null, fieldId: null, optionLabel: "??", isCorrect: false }
-                    ]
-                }
-            ]
+
+function onloadMethod() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const formId = urlParams.get("formId");
+    if(formId){
+      // fetch the formId details from backend and store in window Quiz Data
+      window.fetch('http://localhost:3010/getFormDetails', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
         },
-          {
-            sectionId: null,
-            formId: 6,
-            sectionLabel: "s1",
-            sectionOrder: 1,
-            fields: [
-                {
-                    fieldId: null,
-                    sectionId: null,
-                    fieldPrimaryData: "d",
-                    fieldTypeId: 2,
-                    correctAnswer: "yes",
-                    fieldSecondaryData: "Addition",
-                    isRequired: true
-                },
-                {
-                    fieldId: null,
-                    fieldPrimaryData: "why",
-                    fieldSecondaryData: "Addition",
-                    fieldTypeId: 2,
-                    correctAnswer: "no",
-                    isRequired: true
-                }
-            ]
-        }
-      ]
+        body: JSON.stringify({formId})
+    })
+    .then(response => response.json())
+    .then(res => {
+      console.log(res);
+      const obj = res.data;
+      console.log(obj);
+      renderQuizzes(res.data);
+        // Handle the response from the backend
+
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });// Let assume got the data from backend using promise.
+      // Lets store the data in window object as well as start the form details creation html
+      
+      // Lets start the form details html creation 
+      
+    } else {
+      alert("Should have formId");
     }
   }
-  const quizData = getDummyData();
-  console.log(quizData);
-// function fetchQiuzData() {
-//     fetch()
-//         .then(response => response.json())
-//         .then(data => {
-//             // console.log(data);
-//             renderQuizzes(data);  
-//         });
-//         .catch(error => {
-//             console.error("Error fetching data: ", error);
-//         });
-// }
 function renderQuizzes(quiz){
-    //getting the container where quizzes will be displayed
-    const quizContainer = document.getElementById('quizContainer');
-    quizContainer.innerHTML = '';//clearing any previous content
-
-    //mapping the values with the respective quiztype
     const typeMap = {
         1: 'Business',
         2: 'Education',
         3: 'Sports',
         4: 'Other'
     };
-
-    //creating elements to display quiz details
-    const quizDiv = document.createElement('div');
-    quizDiv.classList.add('quiz');
     const quizTypeName = typeMap[quiz.typeId];
-    quizDiv.innerHTML = `<h2>${quiz.formName}</h2>
-                        <h4>Type: ${quizTypeName}</h4>`;
+    const quizName = quiz.formName;
+    const sections = quiz.sections;
+    console.log(sections);
+    renderSections(sections,quizName,quizTypeName);
 
-    quizDiv.addEventListener('click', () => {
-        renderSections(quiz.sections, quiz.formName, quizTypeName);
-    });
-
-    //appending the quizDiv to the quizContainer
-    quizContainer.appendChild(quizDiv); 
 }
 
 function renderSections(sections, quizName, quizTypeName){
     const quizContainer = document.getElementById('quizContainer');
-    quizContainer.innerHTML = '';
     const totalSections = sections.length;
 
      // Displaying quiz name and type on top
@@ -248,7 +71,7 @@ function renderSections(sections, quizName, quizTypeName){
         let questionName = questionTypeName[section.fields[0].fieldTypeId];
         const sectionNumber = sections.indexOf(section) + 1;
         sectionDiv.innerHTML = `
-            <h3><span class="section-number">${sectionNumber}/${totalSections}</span> <span class="section-info">${section.sectionLabel} - ${questionName}</span></h3>
+            <h3><span class="section-number">${sectionNumber}/${totalSections}</span> <span class="section-info">${section.sectionLabel} ( ${questionName} )</span></h3>
             <div class="section-divider"></div>
             <div class="questionContainer"></div>
         `;
@@ -283,7 +106,7 @@ function renderSections(sections, quizName, quizTypeName){
                 const answerDiv = document.createElement('div');
                 answerDiv.classList.add('answer-item');
                 answerDiv.innerHTML = `
-                <p>Correct Answer: ${field.correctAnswer}</p>
+                <p>Correct Answer: ${field.answer}</p>
                 `;
                 questionDiv.appendChild(answerDiv);
             }
@@ -292,4 +115,3 @@ function renderSections(sections, quizName, quizTypeName){
         quizContainer.appendChild(sectionDiv);
     });
 }
-renderQuizzes(quizData);
