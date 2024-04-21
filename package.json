@@ -2,7 +2,7 @@
   "name": "techtitans",
   "version": "1.0.0",
   "description": "",
-  "main": "C:/Users/DCIN/Desktop/techtitans/server/server.js",
+  "main": "/Users/shreyanshtiwari/Desktop/Techtitans/server/server.js",
   "scripts": {
 
     "begin" : "nodemon"

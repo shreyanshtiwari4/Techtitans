@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SignUp</title>
+    <link rel="stylesheet" href="/css/login.css">
+    <script>
+        function submitForm() {
+            var userName = document.getElementById("userName").value;
+            var password = document.getElementById("password").value;
+
+
+            window.fetch('http://localhost:3010/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ userName: userName, password: password })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // Handle the response from the backend
+                    console.log(data);
+                    if(data.user_name){
+                        alert("Welcome "+data.user_name);
+                        if(data.role_id==1){
+                            window.location.href = "http://127.0.0.1:5500/createquiz.html?userName=" +userName;
+                        }
+                        else{
+                            window.location.href = "file:///C:/Users/DCIN/Desktop/techtitans/Techtitans/studentquiz.html?userName=" +userName;
+                        }
+                        
+
+                    }
+                    else{
+                        alert(data.error);
+
+                    }
+                    
+                    
+
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+
+
+        }
+    </script>
+</head>
+
+<body>
+    <div class="outer-box">
+        <div class="inner-box">
+            <header class="login-header">
+                <h1>Login</h1>
+            </header>
+            <main class="login-body">
+                    <p>
+                        <label for="userName">Username</label>
+                        <input type="text" id="userName" name="userName" required>
+                    </p>
+                    <p>
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
+                    </p>
+                    <p>
+                        <button onclick="submitForm()">SUBMIT</button>
+                    </p>
+            </main>
+        </div>
+        <div class="circle c1"></div>
+        <div class="circle c2"></div>
+    </div>
+
+
+</body>
+
+</html>
